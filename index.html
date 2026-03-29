@@ -1617,7 +1617,8 @@ backlog = [
 ]
 
 summary = summarize_backlog(backlog)
-print(f"\nBacklog: {summary['done']}/{summary['total']} pts ({summary['percent']}%)")`
+print()
+print(f"Backlog: {summary['done']}/{summary['total']} pts ({summary['percent']}%)")`
   },
   {
     badge:"Lesson 06 · Real World",
@@ -1681,12 +1682,14 @@ all_points  = sum(s["points"] for s in sprint_stories)
 done_points = sum(s["points"] for s in done_stories)
 avg_points  = all_points / len(sprint_stories)
 
-print(f"\nPoints: {done_points} done / {all_points} total")
+print()
+print(f"Points: {done_points} done / {all_points} total")
 print(f"Average story size: {avg_points:.1f} pts")
 
 # Sorting
 by_size = sorted(sprint_stories, key=lambda s: s["points"], reverse=True)
-print(f"\nLargest:  {by_size[0]['title']}  ({by_size[0]['points']} pts)")
+print()
+print(f"Largest:  {by_size[0]['title']}  ({by_size[0]['points']} pts)")
 print(f"Smallest: {by_size[-1]['title']} ({by_size[-1]['points']} pts)")
 
 # Sprint report
@@ -1872,7 +1875,8 @@ temp, dew = temp_dew.split("/")
 digits    = altimeter[1:]               # "2992"
 alt_str   = digits[0:2] + "." + digits[2:]  # "29.92"
 
-print(f"\nParsed METAR — {station}")
+print()
+print(f"Parsed METAR — {station}")
 print(f"  Time        : {time_utc}")
 print(f"  Wind        : {wind_field}")
 print(f"  Visibility  : {visibility}")
@@ -1944,12 +1948,13 @@ N744PL,2026-03-04,4100,6.88
 N199XK,2026-03-07,2100,6.92"""
 
 # Split into lines, skip the header row
-lines   = csv_data.strip().split("\n")
+lines   = csv_data.strip().splitlines()
 header  = lines[0].split(",")
 records = [line.split(",") for line in lines[1:]]
 
 print(f"Columns : {header}")
-print(f"Records : {len(records)}\n")
+print(f"Records : {len(records)}")
+print()
 
 # Aggregate total cost per tail number
 totals = {}
