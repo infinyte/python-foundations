@@ -1961,14 +1961,16 @@ for row in records:
     totals[tail] = totals.get(tail, 0.0) + cost
 
 # Print formatted summary
+dollar = "$"
 print("Fuel Cost Summary — March 2026")
 print("-" * 34)
 for tail in sorted(totals):
-    print(f"  {tail}   ${totals[tail]:,.2f}")
+    cost = totals[tail]
+    print(f"  {tail}   {dollar}{cost:,.2f}")
 
 grand_total = sum(totals.values())
 print("-" * 34)
-print(f"  TOTAL          ${grand_total:,.2f}")
+print(f"  TOTAL          {dollar}{grand_total:,.2f}")
 `
   }
 ];
