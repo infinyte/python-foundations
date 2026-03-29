@@ -1938,28 +1938,28 @@ print(f"  Altimeter   : {alt_str} inHg")
     code:`# Working with Files — Fuel Uplift Log
 # In full Python: with open("fuel_uplifts.csv", "r") as f:
 # Browser sandbox cannot access the filesystem, so we simulate
-# the file content as a string — the processing logic is identical.
+# each CSV row as a string — the split/parse logic is identical.
 
-csv_data = """tail_number,date,gallons,cost_per_gallon
-N482VJ,2026-03-01,3200,6.85
-N199XK,2026-03-01,1850,6.85
-N482VJ,2026-03-03,2900,6.90
-N744PL,2026-03-04,4100,6.88
-N199XK,2026-03-07,2100,6.92"""
+csv_rows = [
+    "tail_number,date,gallons,cost_per_gallon",
+    "N482VJ,2026-03-01,3200,6.85",
+    "N199XK,2026-03-01,1850,6.85",
+    "N482VJ,2026-03-03,2900,6.90",
+    "N744PL,2026-03-04,4100,6.88",
+    "N199XK,2026-03-07,2100,6.92",
+]
 
-# Split into lines, skip the header row
-lines   = csv_data.strip().splitlines()
-header  = lines[0].split(",")
-records = [line.split(",") for line in lines[1:]]
+header  = csv_rows[0].split(",")
+records = [row.split(",") for row in csv_rows[1:]]
 
-print(f"Columns : {header}")
-print(f"Records : {len(records)}")
+print("Columns :", header)
+print("Records :", len(records))
 print()
 
 # Aggregate total cost per tail number
 totals = {}
 for row in records:
-    tail    = row[0].strip()
+    tail    = row[0]
     gallons = float(row[2])
     rate    = float(row[3])
     cost    = gallons * rate
@@ -1967,15 +1967,15 @@ for row in records:
 
 # Print formatted summary
 dollar = "$"
-print("Fuel Cost Summary — March 2026")
-print("-" * 34)
+print("Fuel Cost Summary - March 2026")
+print("-" * 30)
 for tail in sorted(totals):
-    cost = totals[tail]
-    print(f"  {tail}   {dollar}{cost:,.2f}")
+    cost = round(totals[tail], 2)
+    print(f"  {tail}   {dollar}{cost:.2f}")
 
-grand_total = sum(totals.values())
-print("-" * 34)
-print(f"  TOTAL          {dollar}{grand_total:,.2f}")
+grand_total = round(sum(totals.values()), 2)
+print("-" * 30)
+print(f"  TOTAL        {dollar}{grand_total:.2f}")
 `
   }
 ];
