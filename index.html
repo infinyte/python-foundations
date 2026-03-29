@@ -1274,6 +1274,12 @@ Sk.builtinFiles={"files":{"src/builtin/sys.js":"var $builtinmodule=function(){va
       <div class="sidebar-section-label">Real-World Python</div>
       <div class="lesson-item" id="nav-5" onclick="goToLesson(5)"><div class="lesson-dot"></div>Working with Data</div>
     </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Errors &amp; I/O</div>
+      <div class="lesson-item" id="nav-6" onclick="goToLesson(6)"><div class="lesson-dot"></div>Error Handling</div>
+      <div class="lesson-item" id="nav-7" onclick="goToLesson(7)"><div class="lesson-dot"></div>String Deep Dive</div>
+      <div class="lesson-item" id="nav-8" onclick="goToLesson(8)"><div class="lesson-dot"></div>Working with Files</div>
+    </div>
   </div>
 
   <div class="content-area">
@@ -1692,6 +1698,278 @@ Sprint Summary
 Stories : {len(done_stories)}/{len(sprint_stories)} complete
 Points  : {done_points}/{all_points} ({pct:.0f}%)
 Status  : {status}""")`
+  }
+
+  // ── ITERATION 2 ─────────────────────────────────────
+  ,{
+    badge:"Lesson 07 · Error Handling",
+    title:"Error Handling & Debugging",
+    subtitle:"Real data is messy. Learn how Python catches errors gracefully — and why every engineer writes these blocks.",
+    html:`
+      <h3>When Data Breaks Your Code</h3>
+      <p>Every trip sheet that enters your system has the potential for bad data: a missing tail number, a fuel quantity entered as text, a destination field left blank. Without error handling, Python crashes the moment it hits the unexpected. With it, your code responds gracefully — and tells you exactly what went wrong.</p>
+      <div class="concept-card tip"><div class="concept-card-label">💡 Why This Matters for POs</div><p>When an engineer says "we need validation on that import endpoint," they are adding <code>try/except</code> blocks. Understanding this helps you write precise acceptance criteria: <em>What happens when a tail number is blank? When fuel uplift is negative?</em></p></div>
+      <h3>The try / except Block</h3>
+      <p>Wrap risky code in a <code>try</code> block. If it fails, Python jumps to the matching <code>except</code> block instead of crashing the program.</p>
+      <div class="concept-card example"><div class="concept-card-label">✦ Basic Structure</div><p>
+        <code>try:</code><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<code>gallons = int(sheet["fuel_uplift"])</code><br>
+        <code>except KeyError:</code><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<code>print("Field missing")</code><br>
+        <code>except ValueError:</code><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<code>print("Not a number")</code>
+      </p></div>
+      <h3>Exception Types You Will See</h3>
+      <div class="data-type-grid">
+        <div class="type-card"><div class="type-name">ValueError</div><div class="type-desc">Value has wrong content — e.g. <code>int("N/A")</code> or <code>float("FULL")</code></div></div>
+        <div class="type-card"><div class="type-name">KeyError</div><div class="type-desc">Dictionary key does not exist — e.g. <code>sheet["fuel"]</code> when field is absent</div></div>
+        <div class="type-card"><div class="type-name">TypeError</div><div class="type-desc">Operation on the wrong type — e.g. adding a string to an integer</div></div>
+        <div class="type-card"><div class="type-name">ZeroDivisionError</div><div class="type-desc">Division by zero — common in cost-per-unit or percentage calculations</div></div>
+      </div>
+      <h3>else and finally</h3>
+      <p>A full <code>try</code> block can include two optional clauses:</p>
+      <div class="concept-card example"><div class="concept-card-label">✦ Full Pattern</div><p>
+        <code>try:</code><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<code>gallons = int(sheet["fuel_uplift"])</code><br>
+        <code>except KeyError:</code><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<code>print("Missing field")</code><br>
+        <code>except ValueError as e:</code><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<code>print(f"Bad value: {e}")</code><br>
+        <code>else:</code><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<code>print("Parsed OK:", gallons)&nbsp;&nbsp;# runs only if no error</code><br>
+        <code>finally:</code><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<code>print("Check complete")&nbsp;&nbsp;# always runs</code>
+      </p></div>
+      <h3>raise — Enforcing Business Rules</h3>
+      <p>You can intentionally trigger an error to enforce logic that numbers alone cannot catch. A fuel uplift of <code>-500</code> is a valid integer but an impossible value.</p>
+      <div class="concept-card example"><div class="concept-card-label">✦ raise Example</div><p>
+        <code>if gallons &lt; 0:</code><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<code>raise ValueError("Fuel uplift cannot be negative")</code>
+      </p></div>
+      <div class="concept-card warning"><div class="concept-card-label">⚠ Common Mistake</div><p>Catching bare <code>Exception</code> silences every error — including bugs you should actually fix. Be specific: catch <code>ValueError</code>, not <code>Exception</code>.</p></div>
+      <div class="challenge-box"><div class="challenge-label">🎯 Challenge</div><div class="challenge-text">
+        1. Run the starter code — observe the valid and missing-field cases.<br>
+        2. Add a third call with <code>{"tail_number": "N744PL", "fuel_uplift": "FULL"}</code> — what error is raised?<br>
+        3. Add a <code>finally</code> block that always prints <code>"--- check complete ---"</code><br>
+        4. Add a guard that raises <code>ValueError</code> if gallons exceeds 10000 (max tank capacity check).
+      </div></div>
+      <div class="quiz-container"><div class="quiz-title">🧠 Quick Check</div>
+        <div class="quiz-question">What is the purpose of the <code>finally</code> block?</div>
+        <div class="quiz-options">
+          <div class="quiz-option" onclick="checkAnswer(this,false,'Close — but finally runs whether or not an error occurred, not only on errors.')">It runs only when an error is caught</div>
+          <div class="quiz-option" onclick="checkAnswer(this,true,'✓ Correct! finally always executes — ideal for cleanup like logging or releasing resources.')">It always runs, regardless of whether an error occurred</div>
+          <div class="quiz-option" onclick="checkAnswer(this,false,'That is the else block — finally is different: it runs in all cases, including when errors occur.')">It runs only when no error occurred</div>
+        </div>
+        <div class="quiz-feedback" id="quizFeedback"></div>
+      </div>`,
+    code:`# Error Handling — Trip Sheet Parser
+# try/except lets your code handle bad data without crashing
+
+trip_sheet = {
+    "tail_number": "N482VJ",
+    "fuel_uplift": "3200",
+    "pax_count": "6",
+    "origin": "KORL",
+    "destination": "KTEB"
+}
+
+def get_fuel_gallons(sheet):
+    try:
+        gallons = int(sheet["fuel_uplift"])
+        if gallons < 0:
+            raise ValueError("Fuel uplift cannot be negative")
+        return gallons
+    except KeyError:
+        print("ERROR: fuel_uplift field missing from trip sheet")
+        return 0
+    except ValueError as e:
+        print(f"ERROR: Invalid fuel value — {e}")
+        return 0
+
+# Test 1: valid trip sheet
+gallons = get_fuel_gallons(trip_sheet)
+print(f"N482VJ  fuel uplift: {gallons} gal")
+
+# Test 2: missing field
+broken = {"tail_number": "N199XK", "pax_count": "4"}
+gallons = get_fuel_gallons(broken)
+print(f"N199XK  fuel uplift: {gallons} gal")
+`
+  }
+  ,{
+    badge:"Lesson 08 · String Deep Dive",
+    title:"String Deep Dive",
+    subtitle:"Strings are the most common data type in real systems. Master slicing, splitting, and reformatting using a METAR weather report as your dataset.",
+    html:`
+      <h3>Strings Are More Powerful Than They Look</h3>
+      <p>A METAR — Meteorological Aerodrome Report — is a compact string of weather data read by pilots, dispatchers, and flight ops teams before every departure. At The Weather Channel, systems parsed thousands of these per hour. Python's string methods turn a raw text field into structured, queryable data in just a few lines.</p>
+      <div class="concept-card"><div class="concept-card-label">📡 Sample METAR</div><p>
+        <code>"KORL 281553Z 18008KT 10SM FEW045 28/17 A2992"</code><br><br>
+        Station · Time · Wind · Visibility · Sky · Temp/Dew · Altimeter
+      </p></div>
+      <h3>Splitting and Slicing</h3>
+      <div class="concept-card example"><div class="concept-card-label">✦ .split()</div><p>
+        <code>fields = metar.split()&nbsp;&nbsp;# splits on whitespace</code><br>
+        <code>station = fields[0]&nbsp;&nbsp;# "KORL"</code><br>
+        <code>wind    = fields[2]&nbsp;&nbsp;# "18008KT"</code>
+      </p></div>
+      <div class="concept-card example"><div class="concept-card-label">✦ Slicing [start:end]</div><p>
+        <code>alt_raw  = "A2992"</code><br>
+        <code>prefix   = alt_raw[0]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# "A"</code><br>
+        <code>digits   = alt_raw[1:]&nbsp;&nbsp;&nbsp;&nbsp;# "2992"</code><br>
+        <code>formatted = digits[0:2] + "." + digits[2:]&nbsp;&nbsp;# "29.92"</code>
+      </p></div>
+      <h3>Key String Methods</h3>
+      <div class="data-type-grid">
+        <div class="type-card"><div class="type-name">.split(delim)</div><div class="type-desc">Split into a list. Default splits on whitespace. <code>"28/17".split("/")</code> → <code>["28","17"]</code></div></div>
+        <div class="type-card"><div class="type-name">.strip()</div><div class="type-desc">Remove leading/trailing whitespace. Essential for CSV rows: <code>"  N482VJ  ".strip()</code></div></div>
+        <div class="type-card"><div class="type-name">.replace(old,new)</div><div class="type-desc">Substitute text. <code>"18008KT".replace("KT","")</code> → <code>"18008"</code></div></div>
+        <div class="type-card"><div class="type-name">.startswith(prefix)</div><div class="type-desc">Check prefix. <code>"A2992".startswith("A")</code> → <code>True</code> — useful for field detection</div></div>
+        <div class="type-card"><div class="type-name">.upper() / .lower()</div><div class="type-desc">Normalize case. Always normalize before comparing: <code>"korl".upper() == "KORL"</code></div></div>
+        <div class="type-card"><div class="type-name">.join(list)</div><div class="type-desc">Opposite of split. <code>", ".join(["KORL","KLAX","KTEB"])</code> → <code>"KORL, KLAX, KTEB"</code></div></div>
+      </div>
+      <div class="concept-card tip"><div class="concept-card-label">💡 Method Chaining</div><p>String methods return strings, so you can chain them:<br><code>field.strip().upper().replace("KT", "")</code></p></div>
+      <div class="challenge-box"><div class="challenge-label">🎯 Challenge</div><div class="challenge-text">
+        1. Run the starter code and read the parsed output.<br>
+        2. Extract wind direction — the first 3 characters of <code>"18008KT"</code> are degrees (180°).<br>
+        3. Extract wind speed — characters 3 through 5 (<code>"08"</code>), convert to <code>int</code>.<br>
+        4. Add a Go/No-Go line: if wind speed &gt; 15 knots, print <code>"WIND ADVISORY"</code>, else <code>"Wind: normal"</code>.
+      </div></div>
+      <div class="quiz-container"><div class="quiz-title">🧠 Quick Check</div>
+        <div class="quiz-question">What does <code>"28/17".split("/")</code> return?</div>
+        <div class="quiz-options">
+          <div class="quiz-option" onclick="checkAnswer(this,false,'split() returns a list, not a tuple. Close though — same concept, different type.')">The tuple <code>("28", "17")</code></div>
+          <div class="quiz-option" onclick="checkAnswer(this,true,'✓ Correct! split() always returns a list of strings, cut at each occurrence of the delimiter.')">The list <code>["28", "17"]</code></div>
+          <div class="quiz-option" onclick="checkAnswer(this,false,'The delimiter is the cut point — it is consumed and does not appear in the result.')">The list <code>["28", "/", "17"]</code></div>
+        </div>
+        <div class="quiz-feedback" id="quizFeedback"></div>
+      </div>`,
+    code:`# String Methods — METAR Parser
+# Sample: KORL 281553Z 18008KT 10SM FEW045 28/17 A2992
+#         [0]  [1]      [2]     [3]  [4]    [5]   [6]
+
+raw_metar = "KORL 281553Z 18008KT 10SM FEW045 28/17 A2992"
+
+# Split into positional fields
+fields = raw_metar.split()
+print("Raw fields:")
+for i, f in enumerate(fields):
+    print(f"  [{i}] {f}")
+
+# Extract named fields
+station    = fields[0]
+time_utc   = fields[1]
+wind_field = fields[2]
+visibility = fields[3]
+sky        = fields[4]
+temp_dew   = fields[5]
+altimeter  = fields[6]
+
+# Parse temp and dew point — "28/17" → 28, 17
+temp, dew = temp_dew.split("/")
+
+# Parse altimeter — strip "A", insert decimal
+digits    = altimeter[1:]               # "2992"
+alt_str   = digits[0:2] + "." + digits[2:]  # "29.92"
+
+print(f"\nParsed METAR — {station}")
+print(f"  Time        : {time_utc}")
+print(f"  Wind        : {wind_field}")
+print(f"  Visibility  : {visibility}")
+print(f"  Sky         : {sky}")
+print(f"  Temp / Dew  : {temp}C / {dew}C")
+print(f"  Altimeter   : {alt_str} inHg")
+`
+  }
+  ,{
+    badge:"Lesson 09 · File I/O",
+    title:"Working with Files",
+    subtitle:"Python's file tools turn a CSV export into a formatted report in minutes — no Excel, no manual copy-paste, no dev ticket required.",
+    html:`
+      <h3>Reading Files — Where Automation Begins</h3>
+      <p>Most real-world Python tasks start with a file: a CSV export from your FBO management system, a tab-delimited fuel log, a nightly FLIFO data dump. Python's built-in file tools let you read, process, and write those files in a few lines of code.</p>
+      <div class="concept-card tip"><div class="concept-card-label">💡 PO Use Case</div><p>Instead of filing a Jira ticket to query the database, you write a Python script that reads the nightly CSV export and produces a formatted cost summary — the kind of ad-hoc analysis that currently takes days to get back.</p></div>
+      <h3>Opening a File</h3>
+      <p>Python uses <code>open()</code> inside a <code>with</code> block. The <code>with</code> block automatically closes the file when you are done — even if an error occurs mid-read.</p>
+      <div class="concept-card example"><div class="concept-card-label">✦ Reading</div><p>
+        <code>with open("fuel_log.csv", "r") as f:</code><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<code>for line in f:</code><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>print(line.strip())</code>
+      </p></div>
+      <div class="concept-card example"><div class="concept-card-label">✦ Writing</div><p>
+        <code>with open("report.txt", "w") as f:</code><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<code>f.write("Fuel Summary\n")</code><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<code>f.write(f"Total: {total} gal\n")</code>
+      </p></div>
+      <h3>File Modes</h3>
+      <div class="data-type-grid">
+        <div class="type-card"><div class="type-name">"r"</div><div class="type-desc">Read — open existing file. Default mode.</div></div>
+        <div class="type-card"><div class="type-name">"w"</div><div class="type-desc">Write — create new file, or overwrite if it exists.</div></div>
+        <div class="type-card"><div class="type-name">"a"</div><div class="type-desc">Append — add lines to the end of an existing file.</div></div>
+        <div class="type-card"><div class="type-name">"r+"</div><div class="type-desc">Read + write — open existing file for both.</div></div>
+      </div>
+      <h3>Processing CSV Data</h3>
+      <p>CSV (Comma-Separated Values) files are rows of fields separated by commas. Python's <code>.split(",")</code> handles simple CSVs; the built-in <code>csv</code> module handles quoted fields and edge cases in full Python environments.</p>
+      <div class="concept-card example"><div class="concept-card-label">✦ Parsing a Row</div><p>
+        <code>line = "N482VJ,2026-03-01,3200,6.85"</code><br>
+        <code>tail, date, gallons, rate = line.split(",")</code><br>
+        <code>cost = float(gallons) * float(rate)</code>
+      </p></div>
+      <div class="concept-card warning"><div class="concept-card-label">⚠ Sandbox Note</div><p>This browser environment cannot access your filesystem. The starter code simulates a CSV file using a string — the processing logic is identical to reading a real file. In full Python, replace the string with <code>open("fuel_uplifts.csv", "r")</code>.</p></div>
+      <div class="challenge-box"><div class="challenge-label">🎯 Challenge</div><div class="challenge-text">
+        1. Run the starter code and read the cost summary.<br>
+        2. Find the tail number with the highest total cost.<br>
+        3. Calculate the total gallons across all records (not just cost).<br>
+        4. Add a new row for <code>N482VJ</code> on <code>2026-03-10</code>, 3500 gallons at $6.95 — re-run and confirm totals update.
+      </div></div>
+      <div class="quiz-container"><div class="quiz-title">🧠 Quick Check</div>
+        <div class="quiz-question">Why does Python use a <code>with</code> block when opening files?</div>
+        <div class="quiz-options">
+          <div class="quiz-option" onclick="checkAnswer(this,false,'That is a side benefit, but the main reason is automatic resource cleanup — the file closes even if an error occurs.')">It makes file reads faster</div>
+          <div class="quiz-option" onclick="checkAnswer(this,true,'✓ Correct! The with block guarantees the file is closed when the block exits — even if an exception is raised inside it.')">It automatically closes the file when the block exits, even on error</div>
+          <div class="quiz-option" onclick="checkAnswer(this,false,'open() works without with — but without it you must call f.close() manually, and a crash can leave the file locked.')">It is required syntax — Python cannot open files without it</div>
+        </div>
+        <div class="quiz-feedback" id="quizFeedback"></div>
+      </div>`,
+    code:`# Working with Files — Fuel Uplift Log
+# In full Python: with open("fuel_uplifts.csv", "r") as f:
+# Browser sandbox cannot access the filesystem, so we simulate
+# the file content as a string — the processing logic is identical.
+
+csv_data = """tail_number,date,gallons,cost_per_gallon
+N482VJ,2026-03-01,3200,6.85
+N199XK,2026-03-01,1850,6.85
+N482VJ,2026-03-03,2900,6.90
+N744PL,2026-03-04,4100,6.88
+N199XK,2026-03-07,2100,6.92"""
+
+# Split into lines, skip the header row
+lines   = csv_data.strip().split("\n")
+header  = lines[0].split(",")
+records = [line.split(",") for line in lines[1:]]
+
+print(f"Columns : {header}")
+print(f"Records : {len(records)}\n")
+
+# Aggregate total cost per tail number
+totals = {}
+for row in records:
+    tail    = row[0].strip()
+    gallons = float(row[2])
+    rate    = float(row[3])
+    cost    = gallons * rate
+    totals[tail] = totals.get(tail, 0.0) + cost
+
+# Print formatted summary
+print("Fuel Cost Summary — March 2026")
+print("-" * 34)
+for tail in sorted(totals):
+    print(f"  {tail}   ${totals[tail]:,.2f}")
+
+grand_total = sum(totals.values())
+print("-" * 34)
+print(f"  TOTAL          ${grand_total:,.2f}")
+`
   }
 ];
 
